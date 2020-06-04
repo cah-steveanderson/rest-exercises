@@ -1,12 +1,10 @@
 package com.cardinalhealth.audition.patient;
 
 import com.cardinalhealth.audition.ResourceNotFoundException;
+import com.cardinalhealth.audition.entities.Patient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
 
@@ -14,24 +12,24 @@ import java.util.*;
 public class PatientController {
     private final Logger logger = LoggerFactory.getLogger(PatientController.class);
     
-    private Map<UUID,Patient> patients;
+    private Map<UUID, Patient> patients;
 
     public PatientController() {
         patients = new HashMap<>();
         
         // Some initial patients...
-        addPatientToMap(Patient.named("Anna", "Bendig"));
-        addPatientToMap(Patient.named("Bendig","Cummins"));
-        addPatientToMap(Patient.named("Gavin","Rave"));
-        addPatientToMap(Patient.named("Justin","Gasper"));
-        addPatientToMap(Patient.named("Louis","Bendig"));
-        addPatientToMap(Patient.named("Indira","Gilicinski"));
-        addPatientToMap(Patient.named("Tim","Larger"));
-        addPatientToMap(Patient.named("Austin","Bendig"));
-        addPatientToMap(Patient.named("Justin","Bendig"));
+        addPatientToDataStore(Patient.named("Anna", "Bendig"));
+        addPatientToDataStore(Patient.named("Bendig","Cummins"));
+        addPatientToDataStore(Patient.named("Gavin","Rave"));
+        addPatientToDataStore(Patient.named("Justin","Gasper"));
+        addPatientToDataStore(Patient.named("Louis","Bendig"));
+        addPatientToDataStore(Patient.named("Indira","Gilicinski"));
+        addPatientToDataStore(Patient.named("Tim","Larger"));
+        addPatientToDataStore(Patient.named("Austin","Bendig"));
+        addPatientToDataStore(Patient.named("Justin","Bendig"));
     }
 
-    private void addPatientToMap(Patient patient) {
+    private void addPatientToDataStore(Patient patient) {
         patients.put(patient.getId(), patient);
         logger.info("Added patient: " + patient);
     }
@@ -49,5 +47,28 @@ public class PatientController {
     @RequestMapping(value="/patient", method= RequestMethod.GET)
     public List<Patient> getPatients() {
         return new ArrayList<>(patients.values());
+    }
+    
+    @RequestMapping(value="/patient/{name}", method= RequestMethod.TRACE)
+    public List<Patient> lookForAPatient(@PathVariable String inputName) {
+        ArrayList<Patient> result = new ArrayList<>();
+
+        for(Map.Entry<UUID, Patient> entry : patients.entrySet()) {
+            String firstName = entry.getValue().getFirstName();
+            String lastName = entry.getValue().getLastName();
+
+            if (firstName.contains(inputName) || lastName.contains(inputName)) {
+                result.add(entry.getValue());
+            }
+        }
+        result.sort(Comparator.naturalOrder());
+
+        return new ArrayList<>();
+    }
+
+    @RequestMapping(value="new", method= RequestMethod.PUT)
+    public void addPatient(@RequestBody Patient newPatient)
+    {
+        addPatientToDataStore(newPatient);
     }
 }

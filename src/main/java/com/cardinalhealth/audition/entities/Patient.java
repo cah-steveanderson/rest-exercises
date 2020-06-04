@@ -1,18 +1,27 @@
-package com.cardinalhealth.audition.patient;
+package com.cardinalhealth.audition.entities;
 
 import java.util.UUID;
 
-public class Patient {
+public class Patient implements Comparable<Patient> {
 
     private final UUID id;
     private final String firstName;
     private final String lastName;
+    private final EmailAddress emailAddress = new EmailAddress();
 
 
     public Patient(UUID id, String firstName, String lastName) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
+    }
+
+    public Patient(UUID id, String firstName, String lastName, String emailAddress, int emailType) {
+        this.id = id;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.emailAddress.address = emailAddress;
+        this.emailAddress.type = emailType;
     }
 
     public static Patient named(String firstName, String lastName) {
@@ -43,6 +52,14 @@ public class Patient {
         if (lastName != null ? !lastName.equals(patient.lastName) : patient.lastName != null) return false;
 
         return true;
+    }
+
+    @Override
+    public int compareTo(Patient other) {
+        String thisName = this.getLastName() + this.getFirstName();
+        String thatName = other.getLastName() + other.getFirstName();
+        System.out.println("this one: " + thisName + ", that one: " + thatName);
+        return thisName.compareTo(thatName);
     }
 
     @Override
