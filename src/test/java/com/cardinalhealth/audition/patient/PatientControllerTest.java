@@ -1,6 +1,7 @@
 package com.cardinalhealth.audition.patient;
 
 import com.cardinalhealth.audition.ResourceNotFoundException;
+import com.cardinalhealth.audition.entities.Patient;
 import org.junit.Test;
 
 import java.util.List;
